@@ -1,13 +1,13 @@
 import os
 import json
 from dotenv import load_dotenv
-from openai import OpenAI
+import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
 
-# Initialize OpenAI Client
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+# Initialize Gemini Client
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # Load prompts
 with open("prompts.json", "r") as f:
@@ -26,18 +26,17 @@ def classify_intent(message: str) -> dict:
     """
     
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo", # Fast, cheap model for routing
-            response_format={ "type": "json_object" },
-            messages=[
-                {"role": "system", "content": classifier_prompt},
-                {"role": "user", "content": message}
-            ],
-            temperature=0.0
+        # Prompt routing with fast model
+        model = genai.GenerativeModel(
+            'gemini-2.5-flash',
+            generation_config={"response_mime_type": "application/json", "temperature": 0.0}
         )
         
+        prompt = f"{classifier_prompt}\n\nUser Message: {message}"
+        response = model.generate_content(prompt)
+        
         # Parse the JSON response
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(response.text)
         
         # Validate keys exist
         if "intent" not in result or "confidence" not in result:
@@ -65,16 +64,15 @@ def route_and_respond(message: str, intent_data: dict) -> str:
     # Second LLM Call for the actual generation
     system_prompt = PROMPTS[intent]
     
-    response = client.chat.completions.create(
-        model="gpt-4-turbo-preview", # Higher quality model for the actual answer
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message}
-        ],
-        temperature=0.7
+    model = genai.GenerativeModel(
+        'gemini-2.5-flash',
+        system_instruction=system_prompt,
+        generation_config={"temperature": 0.7}
     )
     
-    return response.choices[0].message.content
+    response = model.generate_content(message)
+    
+    return response.text
 
 def log_interaction(intent: str, confidence: float, user_message: str, final_response: str):
     """Appends the interaction to a JSON Lines log file."""
@@ -185,9 +183,10 @@ if __name__ == "__main__":
         "How do I structure a cover letter?",
         "My boss says my writing is too verbose."
     ]
+
     # To run test messages uncomment the following loop:
     # for msg in test_messages:
     #    process_message(msg)
     
     # Start the interactive CLI
-    interactive_cli()
+    # interactive_cli()
