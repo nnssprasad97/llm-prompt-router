@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 from dotenv import load_dotenv
 import google.generativeai as genai
 
@@ -19,7 +20,7 @@ def classify_intent(message: str) -> dict:
     """Classifies the user's intent and returns a JSON object."""
     classifier_prompt = """
     Your task is to classify the user's intent. Based on the user message below, 
-    choose one of the following labels: code, data, writing, career, unclear. 
+    choose one of the following labels: code, data, writing, career, math, unclear. 
     Respond with a single JSON object containing two keys: 
     'intent' (the label you chose) and 'confidence' (a float from 0.0 to 1.0). 
     Do not provide any other text or explanation.
@@ -77,6 +78,7 @@ def route_and_respond(message: str, intent_data: dict) -> str:
 def log_interaction(intent: str, confidence: float, user_message: str, final_response: str):
     """Appends the interaction to a JSON Lines log file."""
     log_entry = {
+        "timestamp": datetime.utcnow().isoformat() + "Z",
         "intent": intent,
         "confidence": confidence,
         "user_message": user_message,
@@ -91,7 +93,7 @@ def check_manual_override(message: str) -> dict:
     Checks if the user has provided a manual intent override (e.g., '@code fix this').
     Returns a dictionary with the intent and the cleaned message, or None if no override.
     """
-    valid_intents = list(PROMPTS.keys()) # ['code', 'data', 'writing', 'career']
+    valid_intents = list(PROMPTS.keys()) # ['code', 'data', 'writing', 'career', 'math']
     
     # Check if the message starts with an '@' tag
     if message.startswith("@"):
@@ -140,7 +142,7 @@ def interactive_cli():
     """Runs a continuous interactive loop for the user."""
     print("="*50)
     print("🤖 Welcome to the LLM Prompt Router!")
-    print("Available personas: code, data, writing, career")
+    print("Available personas: code, data, writing, career, math")
     print("Tip: Use '@[persona]' to force a route (e.g., '@code write a python loop')")
     print("Type 'exit' or 'quit' to stop.")
     print("="*50)

@@ -13,3 +13,5 @@
 {"intent": "unclear", "confidence": 0.0, "user_message": "fxi thsi bug pls: for i in range(10) print(i)", "final_response": "I'm not quite sure how to help with that. Are you asking for help with coding, data analysis, writing, or career advice?"}
 {"intent": "unclear", "confidence": 0.0, "user_message": "How do I structure a cover letter?", "final_response": "I'm not quite sure how to help with that. Are you asking for help with coding, data analysis, writing, or career advice?"}
 {"intent": "unclear", "confidence": 0.0, "user_message": "My boss says my writing is too verbose.", "final_response": "I'm not quite sure how to help with that. Are you asking for help with coding, data analysis, writing, or career advice?"}
+{"timestamp": "2026-03-12T09:53:10.223699Z", "intent": "math", "confidence": 0.95, "user_message": "5+5", "final_response": "10"}
+{"timestamp": "2026-03-12T09:53:59.004074Z", "intent": "math", "confidence": 0.95, "user_message": "5+5", "final_response": "10"}

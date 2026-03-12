@@ -8,10 +8,11 @@ An intelligent routing service that uses a "Classify, then Respond" pattern to d
 2. **Set up Environment Variables:**
    - Copy `.env.example` to a new file named `.env`.
    - Add your Gemini API key to `.env` (`GEMINI_API_KEY=AIzaSy...`).
-3. **Run with Docker:**
-   Ensure Docker and Docker Compose are installed. Run the following command in the project root:
+3. **Run the Script:**
+   Install the requirements and run the router script:
    ```bash
-   docker-compose up --build
+   pip install -r requirements.txt
+   python router.py
    ```
 
 ## Design Overview
