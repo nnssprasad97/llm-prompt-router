@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  prompt-router:
+    build: .
+    container_name: intent-router-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Mount the log file so we can view it on the host machine
+      - ./route_log.jsonl:/app/route_log.jsonl
