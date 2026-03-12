@@ -185,8 +185,8 @@ if __name__ == "__main__":
     ]
 
     # To run test messages uncomment the following loop:
-    # for msg in test_messages:
-    #    process_message(msg)
+    for msg in test_messages:
+       process_message(msg)
     
     # Start the interactive CLI
     # interactive_cli()
