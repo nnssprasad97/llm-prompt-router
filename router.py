@@ -49,10 +49,23 @@ def classify_intent(message: str) -> dict:
             
         return result
 
-    except (json.JSONDecodeError, ValueError, Exception) as e:
-        # Graceful degradation on failure (Core Requirement 6)
-        print(f"Classification error: {e}")
+    except json.JSONDecodeError as e:
+        print(f"Classification JSON Error: {e}")
         return {"intent": "unclear", "confidence": 0.0}
+    except ValueError as e:
+        print(f"Classification Value Error (missing keys): {e}")
+        return {"intent": "unclear", "confidence": 0.0}
+    except genai.types.generation_types.StopCandidateException as e:
+        print(f"Classification Generation Error: {e}")
+        return {"intent": "unclear", "confidence": 0.0}
+    except Exception as e:
+        # Check for Google API specific errors without rigid type checking if possible, 
+        # or catch common ones like API key issues.
+        if "google.api_core.exceptions" in str(type(e)):
+            print(f"Classification API Error: {e}")
+            return {"intent": "unclear", "confidence": 0.0}
+        # Re-raise unexpected structural/logic errors
+        raise 
 
 def route_and_respond(message: str, intent_data: dict) -> str:
     """Routes the request to the proper expert or asks for clarification."""
@@ -187,8 +200,8 @@ if __name__ == "__main__":
     ]
 
     # To run test messages uncomment the following loop:
-    for msg in test_messages:
-       process_message(msg)
+    # for msg in test_messages:
+    #    process_message(msg)
     
     # Start the interactive CLI
-    # interactive_cli()
+    interactive_cli()
